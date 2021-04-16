@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Авторизация{% end %}
+
+{% block content %}
+  <section class="login w-100 mt-3">
+    <form action="/login" method="post" class="col-11 col-sm-10 col-md-9 col-lg-7 col-xl-6 col-xxl-5 mx-auto">
+      <div class="mb-3">
+        <h2>Авторизация</h2>
+      </div>
+      {% if data['err'] != None %}
+        <div class="mb-2">
+          <span class="text-danger">{{data['err']}}</span>
+        </div>
+      {% end %}
+      <div class="mb-3">
+        <label for="username">Ник</label>
+        <input type="text" name="username" id="username" class="form-control" maxlength="14" minlength="2" required="true">
+      </div>
+      <div class="mb-3">
+        <label for="password">Пароль</label>
+        <input type="password" name="password" id="password" class="form-control" minlength="8" required="true">
+      </div>
+      <div class="mb-3">
+        {% module xsrf_form_html() %}
+        <button type="submit" class="btn btn-primary">Отправить</button>
+      </div>
+    </form>
+  </section>
+{% end %}

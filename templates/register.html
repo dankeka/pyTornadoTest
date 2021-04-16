@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Регестрация{% end %}
+
+{% block content %}
+<section class="register row container-fluid mt-3">
+  <form action="/register" id="registerForm" onsubmit="return register();" method="post" class="col-11 col-sm-10 col-md-9 col-lg-7 col-xl-6 col-xxl-5 mx-auto">
+    <div class="mb-3">
+      <h2>Регестрация</h2>
+    </div>
+    {% if data['err'] != None %}
+      <div class="mb-2">
+        <span class="text-danger">{{data['err']}}</span>
+      </div>
+    {% end %}
+    <div class="mb-3">
+      <label for="username">Ник</label>
+      <input class="form-control" type="text" name="username" id="username" maxlength="14" minlength="2" required="true"/>
+    </div>
+    <div class="mb-3">
+      <label for="password1">Пароль</label>
+      <input class="form-control" type="password" name="password1" id="password1" minlength="8" required="true"/>
+    </div>
+    <div class="mb-3">
+      <label for="password2">Потвердить пароль</label>
+      <input class="form-control" type="password" name="password2" id="password2" minlength="8" required="true"/>
+    </div>
+    <div class="mb-3">
+      {% module xsrf_form_html() %}
+      <button type="submit" class="btn btn-primary">Создать</button>
+      <br/>
+      <span id="passwordErrorSpan"></span>
+    </div>
+  </form>
+</section>
+
+<script>
+  const pass1 = document.getElementById("password1");
+  const pass2 = document.getElementById("password2");
+  const errPass = document.getElementById("passwordErrorSpan");
+
+  function checkPassword() {
+    if(pass1.value != pass2.value || pass1.value == "") {
+      errPass.innerHTML = "<span class=\"text-danger\">Пароли не совпадают или поля пустые!</span>"
+      return true;
+    }
+
+    errPass.innerHTML = "";
+    return false;
+  }
+
+  function register() {
+    if(checkPassword()) {
+      return false;
+    }
+
+    return true;
+  }
+</script>
+{% end %}

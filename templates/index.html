@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Chat{% end %}
+
+{% block content %}
+<section id="main">
+  <div id="chat">
+    {% if data['messages'] %}
+      {% if len(data['messages']) > 10 %}
+        <div>
+          <a href="#addMsgBtn" class="text-decoration-none">Добавить сообщение</a>
+        </div>
+      {% end %}
+      {% for m in data['messages'] %}
+        <div class="msg">
+          <span class="username">{{m['username']}}</span>
+          <p class="msg_text">{{m['text']}}</p>
+        </div>
+      {% end %}
+    {% else %}
+      <h2>Тут пусто :(</h2>
+    {% end %}
+  </div>
+  {% if data['user'] != None %}
+    <div class="addMsg">
+      <form onsubmit="return sendMessage()">
+        {% if len(data['messages']) > 10 %}
+        <div>
+          <a href="#header" class="text-decoration-none">Наверх</a>
+        </div>
+        {% end %}
+        <label for="msg" class="form-label form-label-sm">Добавить сообщение</label>
+        <input type="text" id="msg" class="form-control form-control-sm">
+        <br/>
+        <button type="submit" class="btn btn-primary btn-sm" id="addMsgBtn">Отправить</button>
+      </form>
+    </div>
+  {% end %}
+</section>
+
+<script>
+  const ws = new WebSocket("{{data['ws']}}");
+  const messageInput = document.getElementById("msg");
+
+  function sendMessage() {
+    let payload = {
+      "text": messageInput.value,
+      "user_id": "{{data['user']['id']}}"
+    };
+    
+    ws.send(JSON.stringify(payload));
+    
+    messageInput.value = "";
+    return false;
+  }
+
+  ws.onmessage = function(evt) {
+    try {
+      let messageDict = JSON.parse(evt.data);
+
+      if(messageDict['err'] == null) {
+        let messageBox = document.createElement("div");
+        console.log(messageDict);
+
+        messageBox.setAttribute('class', 'msg');
+        messageBox.innerHTML = `
+          <span class="username">${messageDict['username']}</span>
+          <p class="msg_text">${messageDict['textMsg']}</p>
+        `;
+
+        document.getElementById("chat").appendChild(messageBox);
+
+      } else {
+        alert("произошла ошибка");
+      }
+    } catch {
+      alert('произошла ошибка');
+    }
+  };
+</script>
+{% end %}
